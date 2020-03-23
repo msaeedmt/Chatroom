@@ -11,13 +11,13 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (message) {
     let li = jQuery('<li></li>');
-    li.text(`${message.from} : ${message.text}`);
+    li.text(`${message.from} ${message.createdAt}: ${message.text}`);
     $('#messages').append(li);
 });
-
+ 
 jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
-    let message=$('#message');
+    let message = $('#message');
 
     socket.emit('createMessage', {
         name: "user",

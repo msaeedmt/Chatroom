@@ -1,9 +1,11 @@
-let generateMessage=(from,text)=>{
+const moment = require('moment');
+
+let generateMessage = (from, text) => {
     return {
         from,
         text,
-        createdAt:new Date().getTime
+        createdAt: moment(new Date().getTime()).format('h:mm a')
     }
 };
 
-module.exports={generateMessage};
+module.exports = {generateMessage};
