@@ -10,11 +10,17 @@ socket.on('disconnect', function () {
 });
 
 socket.on('newMessage', function (message) {
-    let li = jQuery('<li></li>');
-    li.text(`${message.from} ${message.createdAt}: ${message.text}`);
-    $('#messages').append(li);
+    let template=$('#message-template').html();
+    let html=Mustache.render(template,{
+        from:message.from,
+        text: message.text,
+        createdAt: message.createdAt
+    });
+    // let li = jQuery('<li></li>');
+    // li.text(`${message.from} ${message.createdAt}: ${message.text}`);
+    $('#messages').append(html);
 });
- 
+
 jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
     let message = $('#message');
