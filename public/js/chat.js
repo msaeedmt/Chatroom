@@ -20,6 +20,14 @@ socket.on('connect', function () {
     console.log("connected to the server");
 });
 
+socket.emit('join', params, function (err) {
+    if (err) {
+
+    } else {
+
+    }
+})
+
 socket.on('disconnect', function () {
     console.log("server was disconnected");
 });

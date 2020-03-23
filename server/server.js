@@ -19,6 +19,10 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newMessage', generateMessage('admin', 'new user joined'));
 
+    socket.on('join',(params,callback)=>{
+
+    });
+
     socket.on('disconnect', () => {
         console.log('user was disconnected!');
     });
