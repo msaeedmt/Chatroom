@@ -1,6 +1,21 @@
 let socket = io();
 console.log("omad to js");
 
+function scrollDown() {
+    let messages = $('#messages');
+    let newMessage = messages.children('li:last-child');
+
+    let clientHeight = messages.prop('clientHeight');
+    let scrollHeight = messages.prop('scrollHeight');
+    let scrollTop = messages.prop('scrollTop');
+    let newMessageHeight = newMessage.innerHeight();
+    let lastNewMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop + newMessageHeight + lastNewMessageHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 socket.on('connect', function () {
     console.log("connected to the server");
 });
@@ -10,15 +25,16 @@ socket.on('disconnect', function () {
 });
 
 socket.on('newMessage', function (message) {
-    let template=$('#message-template').html();
-    let html=Mustache.render(template,{
-        from:message.from,
+    let template = $('#message-template').html();
+    let html = Mustache.render(template, {
+        from: message.from,
         text: message.text,
         createdAt: message.createdAt
     });
     // let li = jQuery('<li></li>');
     // li.text(`${message.from} ${message.createdAt}: ${message.text}`);
     $('#messages').append(html);
+    scrollDown();
 });
 
 jQuery('#message-form').on('submit', function (e) {
