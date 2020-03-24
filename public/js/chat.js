@@ -18,15 +18,18 @@ function scrollDown() {
 
 socket.on('connect', function () {
     console.log("connected to the server");
+
+    console.log(window.location.search);
+    let params = jQuery.deparam(window.location.search);
+
+    socket.emit('join', params, function (err) {
+        if (err) {
+            window.location.href = '/';
+        } else {
+            console.log("no error!");
+        }
+    })
 });
-
-socket.emit('join', params, function (err) {
-    if (err) {
-
-    } else {
-
-    }
-})
 
 socket.on('disconnect', function () {
     console.log("server was disconnected");
