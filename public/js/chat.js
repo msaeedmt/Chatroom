@@ -25,10 +25,20 @@ socket.on('connect', function () {
     socket.emit('join', params, function (err) {
         if (err) {
             window.location.href = '/';
+            alert(err);
         } else {
             console.log("no error!");
         }
     })
+});
+
+socket.on('updateUsersList', function (users) {
+    let ol = $('<ol></ol>');
+    users.forEach(function (user) {
+        ol.append($('<li></li>').text(user));
+    })
+
+    $('#users').html(ol); 
 });
 
 socket.on('disconnect', function () {

@@ -5,35 +5,45 @@ const socketIo = require('socket.io');
 
 const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
-const {isRealString}=require('./utils/validation');
-
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
 let app = express();
 let server = http.createServer(app);
 let io = socketIo(server);
+let users = new Users();
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     console.log("new user connected")
 
-    socket.emit('newMessage', generateMessage('admin', 'welcome to the chatroom'));
 
-    socket.broadcast.emit('newMessage', generateMessage('admin', 'new user joined'));
-
-    socket.on('join',(params,callback)=>{
-        if(!isRealString(params.name) || !isRealString(params.room)){
-            callback("either the username or roomname is invalid!");
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            return callback("either the username or roomname is invalid!");
         }
+
+        users.removeUser(socket.id);
+        users.addUser(socket.id, params.name, params.room);
+
+        socket.join(params.room);
+        socket.emit('newMessage', generateMessage('admin', 'welcome to the chatroom'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('admin', `${params.name} has joined the chat`));
+        io.to(params.room).emit('updateUsersList',users.getUsersList(params.room));
 
         callback();
     });
 
     socket.on('disconnect', () => {
-        console.log('user was disconnected!');
+        let user=users.removeUser(socket.id);
+
+        io.to(user.room).emit('updateUsersList',users.getUsersList(user.room));
+        io.to(user.room).emit('newMessage',generateMessage('admin',`${user.name} has left the chat!`));
     });
 
     socket.on('createMessage', (message, callback) => {
-        io.emit('newMessage', generateMessage(message.name, message.text)),
+        let user=users.getUser(socket.id);
+        io.to(user.room).emit('newMessage', generateMessage(message.name, message.text)),
             callback('server got it');
 
     });
